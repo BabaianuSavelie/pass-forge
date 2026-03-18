@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-950: #060818;
+  --color-cyan-400: #22d3ee;
+  --color-cyan-500: #06b6d4;
+  --color-violet-500: #8b5cf6;
+  --color-violet-600: #7c3aed;
+}
+
+@layer utilities {
+  .slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .slider-thumb::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    transition: box-shadow 0.2s ease;
+    margin-top: -7px;
+  }
+
+  .slider-thumb::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.8);
+  }
+
+  .slider-thumb::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+    transition: box-shadow 0.2s ease;
+  }
+
+  .slider-thumb::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(
+      to right,
+      #22d3ee var(--slider-pct, 50%),
+      rgba(255, 255, 255, 0.1) var(--slider-pct, 50%)
+    );
+  }
+
+  .slider-thumb::-moz-range-track {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .slider-thumb::-moz-range-progress {
+    height: 6px;
+    border-radius: 3px;
+    background: #22d3ee;
+  }
+
+  .slider-thumb:focus {
+    outline: none;
+  }
+}
