@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePasswordGenerator } from './hooks/usePasswordGenerator'
+import { useMnemonicGenerator } from './hooks/useMnemonicGenerator'
 import { PasswordDisplay } from './components/PasswordDisplay'
 import { LengthSlider } from './components/LengthSlider'
 import { CharsetToggles } from './components/CharsetToggles'
 import { StrengthIndicator } from './components/StrengthIndicator'
 import { GenerateButton } from './components/GenerateButton'
 import { PasswordChecker } from './components/PasswordChecker'
+import { MnemonicGenerator } from './components/MnemonicGenerator'
 
-type Tab = 'generator' | 'checker'
+type Tab = 'generator' | 'mnemonic' | 'checker'
 
 function App() {
   const [tab, setTab] = useState<Tab>('generator')
@@ -25,6 +27,22 @@ function App() {
     copyToClipboard,
     regenerate,
   } = usePasswordGenerator()
+
+  const mnemonic = useMnemonicGenerator()
+
+  // Tab-aware Space key shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code !== 'Space') return
+      const tag = (e.target as HTMLElement).tagName.toLowerCase()
+      if (tag === 'input' || tag === 'button' || tag === 'textarea') return
+      e.preventDefault()
+      if (tab === 'generator') regenerate()
+      else if (tab === 'mnemonic') mnemonic.regenerate()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [tab, regenerate, mnemonic.regenerate])
 
   return (
     <div className="relative min-h-screen bg-[#060818] flex items-center justify-center p-4 overflow-hidden">
@@ -54,15 +72,17 @@ function App() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
             <h1 className="text-3xl font-bold text-white tracking-tight">
-              {tab === 'generator' ? 'Password Generator' : 'Strength Checker'}
+              {tab === 'generator' ? 'PassForge' : tab === 'mnemonic' ? 'Mnemonic Generator' : 'Strength Checker'}
             </h1>
           </div>
           <p className="text-sm text-white/60 max-w-xs mx-auto leading-relaxed">
             {tab === 'generator'
-              ? 'Generate strong, cryptographically secure passwords to protect your accounts. Customize length and character types to meet any security requirement.'
+              ? 'PassForge generates strong, cryptographically secure passwords. Customize length and character types to meet any security requirement.'
+              : tab === 'mnemonic'
+              ? 'Diceware: cryptographically random words form a passphrase that is both memorable and secure. Optionally apply Leet for extra complexity.'
               : 'Paste any password to instantly evaluate its strength and get actionable tips to improve it.'}
           </p>
-          {tab === 'generator' && (
+          {(tab === 'generator' || tab === 'mnemonic') && (
             <p className="text-xs text-white/30">
               Press <kbd className="px-1.5 py-0.5 text-xs bg-white/10 rounded font-mono">Space</kbd> to regenerate instantly
             </p>
@@ -71,17 +91,17 @@ function App() {
 
         {/* Tabs */}
         <div className="flex gap-1 bg-white/5 rounded-xl p-1">
-          {(['generator', 'checker'] as Tab[]).map(t => (
+          {(['generator', 'mnemonic', 'checker'] as Tab[]).map(t => (
             <button
               key={t}
               onClick={() => setTab(t)}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium capitalize transition-all duration-200 ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                 tab === t
                   ? 'bg-gradient-to-r from-cyan-400/20 to-violet-500/20 text-white border border-white/10'
                   : 'text-white/40 hover:text-white/70'
               }`}
             >
-              {t === 'generator' ? 'Generator' : 'Strength Checker'}
+              {t === 'generator' ? 'Generator' : t === 'mnemonic' ? 'Mnemonic' : 'Checker'}
             </button>
           ))}
         </div>
@@ -94,6 +114,8 @@ function App() {
             <CharsetToggles charset={charset} onToggle={toggleCharset} />
             <GenerateButton onClick={regenerate} />
           </>
+        ) : tab === 'mnemonic' ? (
+          <MnemonicGenerator {...mnemonic} />
         ) : (
           <PasswordChecker />
         )}

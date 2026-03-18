@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import zxcvbn from 'zxcvbn'
 import type { CharsetOptions, PasswordState, StrengthLevel } from '../types'
 
@@ -142,20 +142,6 @@ export function usePasswordGenerator() {
       }, 2000)
     })
   }, [state.password])
-
-  // Space key shortcut
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code !== 'Space') return
-      const tag = (e.target as HTMLElement).tagName.toLowerCase()
-      if (tag === 'input' || tag === 'button' || tag === 'textarea') return
-      e.preventDefault()
-      regenerate()
-    }
-
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [regenerate])
 
   return {
     ...state,
